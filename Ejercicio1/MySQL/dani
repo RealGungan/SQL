@@ -1,0 +1,15 @@
+dani he borrado la base de datos anterior, y he metido la nueva.
+se llama igual, empleados nn
+puedes borrar la base de datos con drop databse empleadosnn;
+y luego ejecutar este script:
+te metes como siempre, con el cd situandote, y luego lo de mysql -u root -
+a continuacion escribes lo siguiente :
+source c:\documentos\users\empleadosnn.sql
+
+es decir escribe la ruta donde lo tengas (igual deberias copiarte el script de base de datos empleados nn en documentos
+que igual si lo ejecutas desde la carpeta de xampp te da problemas
+ya me dices
+En principio ya tengo terminado todo: alta empleado, cambio de departamento, modificar el salario y listar los empleados. El tuyo de alta de empleado supongo que te funcionaba no? ya me dices
+
+:)
+)
