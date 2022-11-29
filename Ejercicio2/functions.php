@@ -21,8 +21,9 @@ function addCategory($name, $conn)
 {
     try {
         test_input($name);
-        $sql = $conn->prepare("INSERT INTO categoria (NOMBRE) VALUES (:nombre)");
-
+        $category_code=generateCategoryCod($conn);
+        $sql = $conn->prepare("INSERT INTO categoria (ID_CATEGORIA,NOMBRE) VALUES (:idcategoria,:nombre)");
+        $sql->bindParam(':idcategoria', $category_code);
         $sql->bindParam(':nombre', $name);
         $sql->execute();
     } catch (PDOException $e) {
@@ -30,10 +31,18 @@ function addCategory($name, $conn)
     }
 }
 function generateCategoryCod($conn){
-    $sql = $conn->prepare("SELECT ID_CATEGORIA FROM CATEGORIA VALUES (:nombre)");
-    $number=0;
-    $number++;
-    return $category_code="C"+$number++;
+    $sql = $conn->prepare("SELECT ID_CATEGORIA FROM CATEGORIA ORDER BY ID_CATEGORIA DESC");
+    $sql->execute();
+    $sql->setFetchMode(PDO::FETCH_ASSOC);
+    $result = $sql->fetchAll();
+    $string_result="";
+    foreach ($result as $key => $value) {
+        $string_result = $value["ID_CAGTEGORIA"];
+    }
+    $int = (int) filter_var($string_result, FILTER_SANITIZE_NUMBER_INT);
+    $int++;
+    $category_code = "P".$int;
+    return $category_code;
 }
 function test_input($data) {
     $data = trim($data);
