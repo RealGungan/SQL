@@ -41,7 +41,7 @@ function generateCategoryCod($conn){
     }
     $int = (int) filter_var($string_result, FILTER_SANITIZE_NUMBER_INT);
     $int++;
-    $category_code = "P".$int;
+    $category_code = "C".$int;
     return $category_code;
 }
 function test_input($data) {
