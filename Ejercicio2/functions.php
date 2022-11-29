@@ -20,6 +20,7 @@ function connection()
 function addCategory($name, $conn)
 {
     try {
+        test_input($name);
         $sql = $conn->prepare("INSERT INTO categoria (NOMBRE) VALUES (:nombre)");
 
         $sql->bindParam(':nombre', $name);
@@ -28,3 +29,15 @@ function addCategory($name, $conn)
         echo "<br>Error: " . $e->getMessage();
     }
 }
+function generateCategoryCod($conn){
+    $sql = $conn->prepare("SELECT ID_CATEGORIA FROM CATEGORIA VALUES (:nombre)");
+    $number=0;
+    $number++;
+    return $category_code="C"+$number++;
+}
+function test_input($data) {
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+  }
