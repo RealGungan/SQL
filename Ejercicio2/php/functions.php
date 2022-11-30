@@ -39,12 +39,12 @@ function addCategory($name, $conn)
 //funcion para generar el codigo de la categoria
 function generateCategoryId($conn)
 {
-    $sql = $conn->prepare("SELECT MAX(ID_CATEGORIA) + 1 FROM CATEGORIA");
+    $sql = $conn->prepare("SELECT MAX(ID_CATEGORIA) FROM CATEGORIA");
     $sql->execute();
     $sql->setFetchMode(PDO::FETCH_ASSOC);
     $res = $sql->fetchAll();
 
-    $id = $res[0]['MAX(ID_CATEGORIA) + 1']++;
+    $id = (float) substr($res[0]['MAX(ID_CATEGORIA)'], 2) + 1;
 
     $category_code = "C-" . str_pad($id, 3, '0', STR_PAD_LEFT);
 
@@ -92,20 +92,14 @@ function getNamesOfCategories($conn)
 //funcion para generar el codigo del producto
 function generateProductCod($conn)
 {
-    $sql = $conn->prepare("SELECT ID_PRODUCTO FROM PRODUCTO ORDER BY ID_PRODUCTO");
+    $sql = $conn->prepare("SELECT MAX(ID_PRODUCTO) FROM PRODUCTO");
     $sql->execute();
     $sql->setFetchMode(PDO::FETCH_ASSOC);
-    $result = $sql->fetchAll();
-    $string_result = "";
+    $res = $sql->fetchAll();
 
-    foreach ($result as $key => $value) {
-        $string_result = $value["ID_PRODUCTO"];
-    }
+    $id = (float) substr($res[0]['MAX(ID_PRODUCTO)'], 2) + 1;
 
-    $int = (int) filter_var($string_result, FILTER_SANITIZE_NUMBER_INT);
-    $int++;
-
-    $product_code = "P" . str_pad($int, 4, '0', STR_PAD_LEFT);
+    $product_code = "P" . str_pad($id, 4, '0', STR_PAD_LEFT);
 
     return $product_code;
 }
