@@ -26,7 +26,6 @@ function addCategory($name, $conn)
     try {
         test_input($name);
         $category_code = generateCategoryId($conn);
-        echo $category_code;
 
         $sql = $conn->prepare("INSERT INTO categoria (ID_CATEGORIA,NOMBRE) VALUES (:idcategoria,:nombre)");
         $sql->bindParam(':idcategoria', $category_code);
@@ -70,7 +69,7 @@ function addProduct($conn, $name, $category, $price)
         test_input($price);
 
         $category_string = $category;
-        echo $category_string;
+
         $product_code = generateProductCod($conn);
         $sql = $conn->prepare("INSERT INTO PRODUCTO (ID_PRODUCTO,NOMBRE,PRECIO,ID_CATEGORIA) VALUES (:idproducto,:nombre,:precio,:idcategoria)");
         $sql->bindParam('idproducto', $product_code);
@@ -113,9 +112,56 @@ function generateProductCod($conn)
 
     $int = (int) filter_var($string_result, FILTER_SANITIZE_NUMBER_INT);
     $int++;
-    $product_code = "P" . str_pad($int, strlen($int) + 2, '0', STR_PAD_LEFT);;
+
+    $product_code = "P" . str_pad($int, strlen($int) + 4 - strlen($int), '0', STR_PAD_LEFT);
 
     return $product_code;
+}
+
+// ------------ EJERCICIO 4 ------------
+
+function addProductsStorage($conn, $warehouse, $product_id, $quantity)
+{
+    test_input($quantity);
+
+    $sql = $conn->prepare(
+        "INSERT INTO ALMACENA (NUM_ALMACEN, ID_PRODUCTO, CANTIDAD) VALUES (:num_warehouse, :product_id, :quaintity)"
+    );
+    $sql->bindParam('num_warehouse', $warehouse);
+    $sql->bindParam('product_id', $product_id);
+    $sql->bindParam('quaintity', $quantity);
+
+    $sql->execute();
+}
+
+//funcion para generar desplegable de los almacenes
+function getWarehouse($conn)
+{
+    try {
+        $stmt = $conn->prepare("SELECT NUM_ALMACEN,LOCALIDAD FROM ALMACEN");
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        $resultado = $stmt->fetchAll();
+
+        return $resultado;
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+//funcion para generar desplegable de los productos
+function getProducts($conn)
+{
+    try {
+        $stmt = $conn->prepare("SELECT ID_PRODUCTO,NOMBRE FROM PRODUCTO");
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        $resultado = $stmt->fetchAll();
+
+        return $resultado;
+    } catch (PDOException $e) {
+        return [];
+    }
 }
 
 //funcion para tratar los datos
@@ -128,7 +174,8 @@ function test_input($data)
     return $data;
 }
 //----------------------------------------------------------------Ejercicio 3
-function addStorage($conn,$localidad){
+function addStorage($conn, $localidad)
+{
     test_input($localidad);
     $sql = $conn->prepare("INSERT INTO ALMACEN (LOCALIDAD) VALUES (:localidad)");
     $sql->bindParam('localidad', $localidad);
