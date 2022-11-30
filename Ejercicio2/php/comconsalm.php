@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <h2>Información almacen</h2>
+    <h2>Información al</h2>
     <form method='post' action="<?php echo $_SERVER['PHP_SELF']; ?>">
         <?php
 
@@ -30,7 +30,7 @@
 
         <br />
 
-        <input type="submit" name="submit" id="submit" value="Dar de alta">
+        <input type="submit" name="submit" id="submit" value="Obtener infromación">
     </form>
 </body>
 
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST["submit"])) {
         $conn = connection();
 
-        getWarehouseInfo($conn, $_POST['warehouse']);
+        printWarehouseInfo($conn, $_POST['warehouse']);
     }
 }
 ?>
