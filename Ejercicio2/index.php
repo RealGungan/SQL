@@ -20,7 +20,9 @@
     <br />
     <a href="php/comaltaalm.php">Dar de alta un almacen</a>
     <br />
-    <a href="php/comconstock.php">Consulta Cantidades de Producto</a>
+    <a href="php/comaprpro.php">Aprovisionar Productos</a>
+    <br />
+    <a href="php/comconstock.php">Consulta de Stock</a>
 </body>
 
 </html>

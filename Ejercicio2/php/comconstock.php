@@ -35,7 +35,12 @@
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST["submit"])) {
         $product=$_POST['products'];
-        getNamesOfProduct($conn,$product);
+        $resultado=getTotalProducts($conn, $product);
+        foreach($resultado as $resultado =>$value){
+            echo "Hay una cantidad de ".$value['CANTIDAD']." ";
+            echo "En la localidad de ".$value['LOCALIDAD']." ";
+            echo "</br>";
+        }
     }
 }
 ?>
