@@ -248,3 +248,24 @@ function getTotalProducts($conn, $product)
     //echo "<pre>";var_dump($resultado);echo "</pre>";
     return $resultado;
 }
+// Consulta de Compras (comconscom.php): se mostrarán en un desplegable los NIF de los
+// clientes, una fecha desde y una fecha hasta. Se mostrará por pantalla la información de las
+// compras realizadas por los clientes en ese periodo (producto, nombre producto, precio compra)
+// así como el montante total de todas las compras.
+function getDnies($conn){
+    try {
+        $sql = $conn->prepare("SELECT NIF FROM CLIENTE");
+        $sql->execute();
+        $sql->setFetchMode(PDO::FETCH_ASSOC);
+        $resultado = $sql->fetchAll();
+
+        return $resultado;
+    } catch (PDOException $e) {
+        return [];
+    }
+
+    return $resultado;
+}
+function getBuyInformation(){
+    
+}
