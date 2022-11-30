@@ -39,21 +39,14 @@ function addCategory($name, $conn)
 //funcion para generar el codigo de la categoria
 function generateCategoryId($conn)
 {
-    $sql = $conn->prepare("SELECT ID_CATEGORIA FROM CATEGORIA ORDER BY ID_CATEGORIA");
+    $sql = $conn->prepare("SELECT MAX(ID_CATEGORIA) + 1 FROM CATEGORIA");
     $sql->execute();
     $sql->setFetchMode(PDO::FETCH_ASSOC);
-    $result = $sql->fetchAll();
+    $res = $sql->fetchAll();
 
-    $string_result = '';
+    $id = $res[0]['MAX(ID_CATEGORIA) + 1']++;
 
-    foreach ($result as $key => $value) {
-        $string_result = $value["ID_CATEGORIA"];
-    }
-
-    $int = (int) filter_var($string_result, FILTER_SANITIZE_NUMBER_INT);
-    $int++;
-
-    $category_code = "C" . str_pad($int, strlen($int) + 3 - strlen($int), '0', STR_PAD_LEFT);
+    $category_code = "C-" . str_pad($id, 3, '0', STR_PAD_LEFT);
 
     return $category_code;
 }
@@ -112,7 +105,7 @@ function generateProductCod($conn)
     $int = (int) filter_var($string_result, FILTER_SANITIZE_NUMBER_INT);
     $int++;
 
-    $product_code = "P" . str_pad($int, strlen($int) + 4 - strlen($int), '0', STR_PAD_LEFT);
+    $product_code = "P" . str_pad($int, 4, '0', STR_PAD_LEFT);
 
     return $product_code;
 }

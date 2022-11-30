@@ -12,7 +12,6 @@
     <h2>Información almacen</h2>
     <form method='post' action="<?php echo $_SERVER['PHP_SELF']; ?>">
         <?php
-
         include("functions.php");
 
         $conn = connection();
