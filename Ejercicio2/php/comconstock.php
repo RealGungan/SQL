@@ -41,6 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             echo "En la localidad de ".$value['LOCALIDAD']." ";
             echo "</br>";
         }
+    }else{
+        echo "Por favor introduza y seleccione valores correctos";
     }
 }
 ?>

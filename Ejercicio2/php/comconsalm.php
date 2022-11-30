@@ -42,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $conn = connection();
 
         printWarehouseInfo($conn, $_POST['warehouse']);
+    }else{
+        echo "Por favor  seleccione una localidad";
     }
 }
 ?>

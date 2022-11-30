@@ -26,7 +26,11 @@ include 'functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $connection = connection();
-
-    addCategory($_POST['name'], $connection);
+    if (isset($_POST["submit"])) {
+        addCategory($_POST['name'], $connection);
+    }else{
+        echo "Por favor, introduza un calor correcto";
+    }
+    
 }
 ?>
