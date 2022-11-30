@@ -45,10 +45,6 @@ function generateCategoryId($conn)
     $sql->setFetchMode(PDO::FETCH_ASSOC);
     $result = $sql->fetchAll();
 
-    echo '<pre>';
-    var_dump($result);
-    echo '</pre>';
-
     $string_result = '';
 
     foreach ($result as $key => $value) {
@@ -58,7 +54,7 @@ function generateCategoryId($conn)
     $int = (int) filter_var($string_result, FILTER_SANITIZE_NUMBER_INT);
     $int++;
 
-    $category_code = "C" . str_pad($int, strlen($int) + 2, '0', STR_PAD_LEFT);
+    $category_code = "C" . str_pad($int, strlen($int) + 3 - strlen($int), '0', STR_PAD_LEFT);
 
     return $category_code;
 }
