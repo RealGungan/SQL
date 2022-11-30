@@ -40,7 +40,7 @@ function addCategory($name, $conn)
 //funcion para generar el codigo de la categoria
 function generateCategoryId($conn)
 {
-    $sql = $conn->prepare("SELECT ID_CATEGORIA FROM CATEGORIA ORDER BY ID_CATEGORIA");
+    $sql = $conn->prepare("SELECT ID_CATEGORIA FROM CATEGORIA ORDER BY ID_CATEGORIA LIMIT 1");
     $sql->execute();
     $sql->setFetchMode(PDO::FETCH_ASSOC);
     $result = $sql->fetchAll();
@@ -101,7 +101,7 @@ function getNamesOfCategories($conn)
 //funcion para generar el codigo del producto
 function generateProductCod($conn)
 {
-    $sql = $conn->prepare("SELECT ID_PRODUCTO FROM PRODUCTO ORDER BY ID_PRODUCTO");
+    $sql = $conn->prepare("SELECT ID_PRODUCTO FROM PRODUCTO ORDER BY ID_PRODUCTO LIMIT 1");
     $sql->execute();
     $sql->setFetchMode(PDO::FETCH_ASSOC);
     $result = $sql->fetchAll();
