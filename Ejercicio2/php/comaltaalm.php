@@ -26,13 +26,10 @@ include 'functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    if(isset($_POST["submit"])){
+    if (isset($_POST["submit"])) {
         $localidad = $_POST['localidad'];
         $conn = connection();
-        addStorage($conn,$localidad);
+        addStorage($conn, $localidad);
     }
-    
-
-    //addCategory($_POST['name'], $connection);
 }
 ?>
