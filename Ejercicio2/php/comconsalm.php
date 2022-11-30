@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <h2>Información al</h2>
+    <h2>Información almacen</h2>
     <form method='post' action="<?php echo $_SERVER['PHP_SELF']; ?>">
         <?php
 
