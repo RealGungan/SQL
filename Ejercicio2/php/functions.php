@@ -206,3 +206,23 @@ function test_input($data)
 
     return $data;
 }
+
+//------------------------ejercicio 5
+function getNamesOfProduct($conn)
+{
+    try {
+        $sql = $conn->prepare("SELECT ID_PRODUCTO,NOMBRE FROM PRODUCTO");
+        $sql->execute();
+        $sql->setFetchMode(PDO::FETCH_ASSOC);
+        $resultado = $sql->fetchAll();
+
+        return $resultado;
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+// se mostrará la cantidad disponible del producto seleccionado en cada uno de los almacenes.
+function getTotalProducts($conn, $localidad)
+{
+    $sqL = $conn->prepare("SELECT COUNT(*) FROM PRODUCTO,ALMACENA,ALMACEN WHERE PRODUCTO.ID_PRODUCTO=ALMACENA.ID_PRODUCTO AND ALMACENA.NUM_ALMACEN=ALMACEN.NUM_ALMACEN GROUP BY ALMACEN.LOCALIDAD");
+}
