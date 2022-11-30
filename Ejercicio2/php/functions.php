@@ -26,7 +26,6 @@ function addCategory($name, $conn)
     try {
         test_input($name);
         $category_code = generateCategoryId($conn);
-        echo $category_code;
 
         $sql = $conn->prepare("INSERT INTO categoria (ID_CATEGORIA,NOMBRE) VALUES (:idcategoria,:nombre)");
         $sql->bindParam(':idcategoria', $category_code);
@@ -70,7 +69,7 @@ function addProduct($conn, $name, $category, $price)
         test_input($price);
 
         $category_string = $category;
-        echo $category_string;
+
         $product_code = generateProductCod($conn);
         $sql = $conn->prepare("INSERT INTO PRODUCTO (ID_PRODUCTO,NOMBRE,PRECIO,ID_CATEGORIA) VALUES (:idproducto,:nombre,:precio,:idcategoria)");
         $sql->bindParam('idproducto', $product_code);
@@ -131,16 +130,15 @@ function addProductsStorage($conn, $warehouse, $product_id, $quantity)
     $sql->bindParam('num_warehouse', $warehouse);
     $sql->bindParam('product_id', $product_id);
     $sql->bindParam('quaintity', $quantity);
-    $sql->execute();
 
     $sql->execute();
 }
 
-//funcion para generar desplegable de los productos
-function getProducts($conn)
+//funcion para generar desplegable de los almacenes
+function getWarehouse($conn)
 {
     try {
-        $stmt = $conn->prepare("SELECT ID_PRODUCTO,NOMBRE FROM PRODUCTO");
+        $stmt = $conn->prepare("SELECT NUM_ALMACEN,LOCALIDAD FROM ALMACEN");
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $resultado = $stmt->fetchAll();
@@ -151,11 +149,11 @@ function getProducts($conn)
     }
 }
 
-//funcion para generar desplegable de los almacenes
-function getWarehouse($conn)
+//funcion para generar desplegable de los productos
+function getProducts($conn)
 {
     try {
-        $stmt = $conn->prepare("SELECT NUM_ALMACEN,LOCALIDAD FROM CATEGORIA");
+        $stmt = $conn->prepare("SELECT ID_PRODUCTO,NOMBRE FROM PRODUCTO");
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $resultado = $stmt->fetchAll();
@@ -176,7 +174,8 @@ function test_input($data)
     return $data;
 }
 //----------------------------------------------------------------Ejercicio 3
-function addStorage($conn,$localidad){
+function addStorage($conn, $localidad)
+{
     test_input($localidad);
     $sql = $conn->prepare("INSERT INTO ALMACEN (LOCALIDAD) VALUES (:localidad)");
     $sql->bindParam('localidad', $localidad);
