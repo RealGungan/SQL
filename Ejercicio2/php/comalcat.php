@@ -26,6 +26,7 @@ include 'functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $connection = connection();
+
     addCategory($_POST['name'], $connection);
 }
 ?>
