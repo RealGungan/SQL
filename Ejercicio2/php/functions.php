@@ -180,7 +180,11 @@ function getNamesOfProduct($conn)
 function getTotalProducts($conn, $product)
 {
     test_input($product);
-    $sql = $conn->prepare("SELECT CANTIDAD,LOCALIDAD FROM PRODUCTO,ALMACENA,ALMACEN WHERE ALMACENA.ID_PRODUCTO=PRODUCTO.ID_PRODUCTO AND ALMACENA.NUM_ALMACEN=ALMACEN.NUM_ALMACEN AND PRODUCTO.ID_PRODUCTO=:producto");
+    $sql = $conn->prepare("SELECT CANTIDAD,LOCALIDAD 
+                            FROM PRODUCTO,ALMACENA,ALMACEN 
+                            WHERE ALMACENA.ID_PRODUCTO=PRODUCTO.ID_PRODUCTO 
+                            AND ALMACENA.NUM_ALMACEN=ALMACEN.NUM_ALMACEN 
+                            AND PRODUCTO.ID_PRODUCTO=:producto");
     $sql->bindParam('producto', $product);
     $sql->execute();
     $sql->setFetchMode(PDO::FETCH_ASSOC);
