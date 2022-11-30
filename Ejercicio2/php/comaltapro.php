@@ -46,6 +46,8 @@
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST["submit"])) {
         addProduct($conn, $_POST['name'], $_POST['categories'], $_POST['price']);
+    }else{
+        echo "Por favor, introduzca valores correctos";
     }
 }
 ?>

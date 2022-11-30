@@ -30,6 +30,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $localidad = $_POST['localidad'];
         $conn = connection();
         addStorage($conn, $localidad);
+    }else{
+        echo "Por favor introduza un calor correcto";
     }
 }
 ?>

@@ -55,8 +55,9 @@
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST["submit"])) {
         $conn = connection();
-
         addProductsStorage($conn, $_POST['warehouse'], $_POST['product'],  $_POST['quantity']);
+    }else{
+        echo "Por favor introduza y seleccione valores correctos";
     }
 }
 ?>
