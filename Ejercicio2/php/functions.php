@@ -175,3 +175,10 @@ function test_input($data)
 
     return $data;
 }
+//----------------------------------------------------------------Ejercicio 3
+function addStorage($conn,$localidad){
+    test_input($localidad);
+    $sql = $conn->prepare("INSERT INTO ALMACEN (LOCALIDAD) VALUES (:localidad)");
+    $sql->bindParam('localidad', $localidad);
+    $sql->execute();
+}
