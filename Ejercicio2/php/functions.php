@@ -236,7 +236,15 @@ function getNamesOfProduct($conn)
     }
 }
 // se mostrará la cantidad disponible del producto seleccionado en cada uno de los almacenes.
-function getTotalProducts($conn, $localidad)
+function getTotalProducts($conn, $product)
+
 {
-    $sqL = $conn->prepare("SELECT COUNT(*) FROM PRODUCTO,ALMACENA,ALMACEN WHERE PRODUCTO.ID_PRODUCTO=ALMACENA.ID_PRODUCTO AND ALMACENA.NUM_ALMACEN=ALMACEN.NUM_ALMACEN GROUP BY ALMACEN.LOCALIDAD");
+    test_input($product);
+    $sql = $conn->prepare("SELECT CANTIDAD,LOCALIDAD FROM PRODUCTO,ALMACENA,ALMACEN WHERE ALMACENA.ID_PRODUCTO=PRODUCTO.ID_PRODUCTO AND ALMACENA.NUM_ALMACEN=ALMACEN.NUM_ALMACEN AND PRODUCTO.ID_PRODUCTO=:producto");
+    $sql->bindParam('producto', $product);
+    $sql->execute();
+    $sql->setFetchMode(PDO::FETCH_ASSOC);
+    $resultado = $sql->fetchAll();
+    //echo "<pre>";var_dump($resultado);echo "</pre>";
+    return $resultado;
 }
