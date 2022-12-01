@@ -295,7 +295,7 @@ function addClient($conn,$nif,$nombre,$apellido,$cp,$direc,$ciu){
     test_input($cp);
     test_input($direc);
     test_input($ciu);
-    $sql = $conn->prepare("INSERT INTO CLIENTE (NIF,NOMBRE,APELLIDO,CP,DIRECCION,CIUDAD) VALUES (:nif,:nombre,:apellido,:cp
+    $sql = $conn->prepare("INSERT INTO CLIENTE (NIF,NOMBRE,APELLIDO,CP,DIRECCION,CIUDAD) VALUES (:nif,:nombre,:apellido,:cp,
     :direccion,:ciudad)");
     $sql->bindParam('nif',$nif);
     $sql->bindParam('nombre',$nombre);
