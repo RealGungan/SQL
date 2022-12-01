@@ -264,4 +264,48 @@ function getDnies($conn)
 }
 function getBuyInformation()
 {
+    
 }
+//EJERCICCIO 8
+// Se validará que el campo NIF no está
+// vacío y que se compone de 8 dígitos más una letra. Además, se controlará mediante el
+// correspondiente mensaje de error que no se dan de alta dos clientes con el mismo NIF
+function validateDni($dni)
+{
+    test_input($dni);
+    $valido=true;
+    $letra = substr($dni, 8);
+    $numeros = substr($dni,0,7);
+    if (strlen($dni) > 9 || strlen($dni) < 9) {
+        echo "Error. La longitud no es la correcta. No es posible dar de alta";
+        $valido=false;
+    }else if(!ctype_alpha($letra)){
+        echo "Error, el último carácter debe de ser una letra";
+        $valido=false;
+    }else if(!is_numeric($numeros)){
+        echo "Error, debe de ser 8 digitos.";
+        $valido=false;
+    }
+    return $valido;
+}
+function addClient($conn,$nif,$nombre,$apellido,$cp,$direc,$ciu){
+    test_input($nif);
+    test_input($nombre);
+    test_input($apellido);
+    test_input($cp);
+    test_input($direc);
+    test_input($ciu);
+    $sql = $conn->prepare("INSERT INTO CLIENTE (NIF,NOMBRE,APELLIDO,CP,DIRECCION,CIUDAD) VALUES (:nif,:nombre,:apellido,:cp
+    :direccion,:ciudad)");
+    $sql->bindParam('nif',$nif);
+    $sql->bindParam('nombre',$nombre);
+    $sql->bindParam('apellido',$apellido);
+    $sql->bindParam('cp',$cp);
+    $sql->bindParam('direccion',$direc);
+    $sql->bindParam('ciudad',$ciu);
+    $sql->execute();
+    echo "Se ha dado de alta al cliente";
+
+
+}
+

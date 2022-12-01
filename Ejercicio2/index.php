@@ -26,6 +26,8 @@
         <li><a href="php/comconstock.php">Consulta Cantidades de Producto</a></li>
         <br />
         <li><a href="php/comconsalm.php">Información de almacen</a></li>
+        <br />
+        <li><a href="php/comaltacli.php">Alta de Clientes</a></li>
     </ul>
 </body>
 
