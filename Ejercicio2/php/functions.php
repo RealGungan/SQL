@@ -270,13 +270,13 @@ function getBuyInformation()
 // Se validará que el campo NIF no está
 // vacío y que se compone de 8 dígitos más una letra. Además, se controlará mediante el
 // correspondiente mensaje de error que no se dan de alta dos clientes con el mismo NIF
-function validateDni($dni)
+function validateDni($nif)
 {
-    test_input($dni);
+    test_input($nif);
     $valido=true;
-    $letra = substr($dni, 8);
-    $numeros = substr($dni,0,7);
-    if (strlen($dni) > 9 || strlen($dni) < 9) {
+    $letra = substr($nif, 8);
+    $numeros = substr($nif,0,7);
+    if (strlen($nif) > 9 || strlen($nif) < 9) {
         echo "Error. La longitud no es la correcta. No es posible dar de alta";
         $valido=false;
     }else if(!ctype_alpha($letra)){
@@ -305,7 +305,5 @@ function addClient($conn,$nif,$nombre,$apellido,$cp,$direc,$ciu){
     $sql->bindParam('ciudad',$ciu);
     $sql->execute();
     echo "Se ha dado de alta al cliente";
-
-
 }
 
