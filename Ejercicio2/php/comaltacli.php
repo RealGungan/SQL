@@ -48,14 +48,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $cp=$_POST['cp'];
         $direc=$_POST['direc'];
         $ciu=$_POST['ciu'];
-        $valido=validateDni($nif);
+        $valido= isValidDni($nif);
         if($valido == false){
-            echo "No se puede dar de alta cliente";
+            echo "No se puede dar de alta al cliente </br>";
         }else{
             addClient($conn,$nif,$nombre,$apellido,$cp,$direc,$ciu);
         }
     }else{
-        echo "Por favor, introduza un calor correcto";
+        echo "Por favor, introduzca un calor correcto </br>";
     }
     
 }

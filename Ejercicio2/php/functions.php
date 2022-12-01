@@ -231,22 +231,10 @@ function printWarehouseInfo($conn, $warehouse)
     echo '</ul>';
 }
 
-//funcion para tratar los datos
-function test_input($data)
-{
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-
-    return $data;
-}
-
 // ------------ EJERCICIO 7 ------------
 
-// Consulta de Compras (comconscom.php): se mostrarán en un desplegable los NIF de los
-// clientes, una fecha desde y una fecha hasta. Se mostrará por pantalla la información de las
-// compras realizadas por los clientes en ese periodo (producto, nombre producto, precio compra)
-// así como el montante total de todas las compras.
+// POR TERMINAR POR FALTA DE EXPLICACION DE COOKIES
+
 function getDnies($conn)
 {
     try {
@@ -264,31 +252,29 @@ function getDnies($conn)
 }
 function getBuyInformation()
 {
-    
 }
-//EJERCICCIO 8
-// Se validará que el campo NIF no está
-// vacío y que se compone de 8 dígitos más una letra. Además, se controlará mediante el
-// correspondiente mensaje de error que no se dan de alta dos clientes con el mismo NIF
-function validateDni($nif)
+// ------------ EJERCICIO 8 ------------
+
+function isValidDni($nif)
 {
     test_input($nif);
-    $valido=true;
+    $valido = true;
     $letra = substr($nif, 8);
-    $numeros = substr($nif,0,7);
+    $numeros = substr($nif, 0, 7);
     if (strlen($nif) > 9 || strlen($nif) < 9) {
-        echo "Error. La longitud no es la correcta. No es posible dar de alta";
-        $valido=false;
-    }else if(!ctype_alpha($letra)){
-        echo "Error, el último carácter debe de ser una letra";
-        $valido=false;
-    }else if(!is_numeric($numeros)){
-        echo "Error, debe de ser 8 digitos.";
-        $valido=false;
+        echo "Error. La longitud no es la correcta. No es posible dar de alta</br>";
+        $valido = false;
+    } else if (!ctype_alpha($letra)) {
+        echo "Error, el último carácter debe de ser una letra</br>";
+        $valido = false;
+    } else if (!is_numeric($numeros)) {
+        echo "Error, debe de ser 8 digitos.</br>";
+        $valido = false;
     }
     return $valido;
 }
-function addClient($conn,$nif,$nombre,$apellido,$cp,$direc,$ciu){
+function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu)
+{
     test_input($nif);
     test_input($nombre);
     test_input($apellido);
@@ -297,13 +283,55 @@ function addClient($conn,$nif,$nombre,$apellido,$cp,$direc,$ciu){
     test_input($ciu);
     $sql = $conn->prepare("INSERT INTO CLIENTE (NIF,NOMBRE,APELLIDO,CP,DIRECCION,CIUDAD) VALUES (:nif,:nombre,:apellido,:cp,
     :direccion,:ciudad)");
-    $sql->bindParam('nif',$nif);
-    $sql->bindParam('nombre',$nombre);
-    $sql->bindParam('apellido',$apellido);
-    $sql->bindParam('cp',$cp);
-    $sql->bindParam('direccion',$direc);
-    $sql->bindParam('ciudad',$ciu);
+    $sql->bindParam('nif', $nif);
+    $sql->bindParam('nombre', $nombre);
+    $sql->bindParam('apellido', $apellido);
+    $sql->bindParam('cp', $cp);
+    $sql->bindParam('direccion', $direc);
+    $sql->bindParam('ciudad', $ciu);
     $sql->execute();
-    echo "Se ha dado de alta al cliente";
+    echo "Se ha dado de alta al cliente</br>";
+}
+// Compra de Productos (compro.php): el cliente podrá realizar la compra de un solo producto
+// siempre que haya disponibilidad del mismo.
+function buyProduct($conn,$nif,$producto, $cantidad)
+{
+    test_input($cantidad);  
+    $fecha = new DateTime();
+    $stringFecha = $fecha->format("Y-m-d");
+    $sql = $conn->prepare("INSERT INTO COMPRA (NIF,ID_PRODUCTO,FECHA_COMPRA,UNIDADES) VALUES (:nif,:idproducto,:fecha,:unidades)");
+    $sql->bindParam('nif', $nif);
+    $sql->bindParam('idproducto', $producto);
+    $sql->bindParam('fecha', $stringFecha);
+    $sql->bindParam('unidades', $cantidad);
+    $sql->execute();
+    echo "Se ha realizado su compra satisfactoriamente</br>";
+
+}
+function isAvailable($conn, $producto, $cantidad)
+{
+    test_input($cantidad);
+    $valid = true;
+    $result = getTotalProducts($conn, $producto);
+    foreach ($result as $resultado => $value) {
+        $quantity = $value['CANTIDAD'];
+    }
+    if ($cantidad > $quantity) {
+        $valid=false;
+        echo"No hay existencias suficientes</br>";
+    }else if($quantity <=0){
+        $valid=false;
+        echo"Por favor introduzca una cantidad</br>";
+    }
+    return $valid;
 }
 
+//funcion para tratar los datos
+function test_input($data)
+{
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+
+    return $data;
+}

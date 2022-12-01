@@ -28,6 +28,8 @@
         <li><a href="php/comconsalm.php">Información de almacen</a></li>
         <br />
         <li><a href="php/comaltacli.php">Alta de Clientes</a></li>
+        <br />
+        <li><a href="php/compro.php">Consulta de Compras</a></li>
     </ul>
 </body>
 
