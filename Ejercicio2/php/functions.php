@@ -316,12 +316,12 @@ function isAvailable($conn, $producto, $cantidad)
     foreach ($result as $resultado => $value) {
         $quantity = $value['CANTIDAD'];
     }
-    if ($cantidad > $quantity) {
+     if($quantity <=0 || !is_numeric($cantidad)){
+        $valid=false;
+        echo"Por favor introduzca una cantidad correcta</br>";
+    }else if ($cantidad > $quantity) {
         $valid=false;
         echo"No hay existencias suficientes</br>";
-    }else if($quantity <=0){
-        $valid=false;
-        echo"Por favor introduzca una cantidad</br>";
     }
     return $valid;
 }
