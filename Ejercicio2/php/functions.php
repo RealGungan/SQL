@@ -132,15 +132,18 @@ function addProductsStorage($conn, $warehouse, $product_id, $quantity)
 {
     try {
         test_input($quantity);
-
+        //he usado ignore para que si existe problemas de clave primarias, vaya a la siguiente peticion y busque los valores para aprovisionar
         $sql = $conn->prepare(
-            "INSERT INTO ALMACENA (NUM_ALMACEN, ID_PRODUCTO, CANTIDAD) VALUES (:num_warehouse, :product_id, :quaintity)"
-        );
+            "INSERT IGNORE INTO ALMACENA (NUM_ALMACEN, ID_PRODUCTO, CANTIDAD) VALUES (:num_warehouse, :product_id, :quaintity)");
         $sql->bindParam('num_warehouse', $warehouse);
         $sql->bindParam('product_id', $product_id);
         $sql->bindParam('quaintity', $quantity);
-
         $sql->execute();
+        $sql2 = $conn->prepare("REPLACE INTO ALMACENA VALUES (:num_warehouse, :product_id, :quaintity)");
+        $sql2->bindParam('num_warehouse', $warehouse);
+        $sql2->bindParam('product_id', $product_id);
+        $sql2->bindParam('quaintity', $quantity);
+        $sql2->execute();
     } catch (PDOException $e) {
         echo "<br>Error: " . $e->getMessage();
     }
@@ -255,7 +258,7 @@ function printWarehouseInfo($conn, $warehouse)
         }
 
         echo '</ul>';
-    }else{
+    } else {
         echo "En esta localidad no hay productos dados de alta";
     }
 }
@@ -322,7 +325,7 @@ function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu)
         echo "Se ha dado de alta al cliente</br>";
     } catch (PDOException $e) {
         $error = $e->getCode();
-        if($error = '2300'){
+        if ($error = '2300') {
             echo "DNI EXISTENTE. NO SE PUEDE DAR DE ALTA <BR>";
         }
         //echo "<br>Error: " . $e->getMessage();  
@@ -332,7 +335,9 @@ function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu)
 // siempre que haya disponibilidad del mismo.
 function buyProduct($conn, $nif, $producto, $cantidad)
 {
+    $valido=true;
     try {
+        
         test_input($cantidad);
         $fecha = new DateTime();
         $stringFecha = $fecha->format("Y-m-d");
@@ -344,8 +349,13 @@ function buyProduct($conn, $nif, $producto, $cantidad)
         $sql->execute();
         echo "Se ha realizado su compra satisfactoriamente</br>";
     } catch (PDOException $e) {
-        echo "<br>Error: " . $e->getMessage();
+        $valido=false;
+        $error = $e->getCode();
+        if ($error = '2300') {
+            echo "ESTE DNI YA HA REALIZADO COMPRA <BR>";
+        }
     }
+    return $valido;
 }
 function isAvailable($conn, $producto, $cantidad)
 {
@@ -364,7 +374,29 @@ function isAvailable($conn, $producto, $cantidad)
     }
     return $valid;
 }
-
+function updateTableAlmacena($conn, $producto, $cantidad)
+{
+    try {
+        test_input($cantidad);
+        //$cantidad_nueva=
+        $stmt = $conn->prepare("SELECT CANTIDAD FROM ALMACENA WHERE ALMACENA.ID_PRODUCTO=:producto ");
+        $stmt->bindparam('producto', $producto);
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_NUM);
+        $resultado = $stmt->fetchAll();
+        //var_dump($resultado);
+        $quantity = $resultado[0][0];
+        //echo $quantity;
+        $new_quantity = intval($quantity - $cantidad);
+        $stmt2 = $conn->prepare("UPDATE ALMACENA  SET CANTIDAD=:new_quantity WHERE ALMACENA.ID_PRODUCTO=:producto");
+        $stmt2->bindparam('new_quantity', $new_quantity);
+        $stmt2->bindparam('producto', $producto);
+        $stmt2->execute();
+        echo "Actualizado tabla Almacena con nueva cantidad";
+    } catch (PDOException $e) {
+        echo "<br>Error: " . $e->getMessage();
+    }
+}
 //funcion para tratar los datos
 function test_input($data)
 {
