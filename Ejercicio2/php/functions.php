@@ -222,8 +222,8 @@ function getWarehouseInfo($conn, $warehouse)
                                 FROM PRODUCTO, ALMACENA, ALMACEN 
                                 WHERE PRODUCTO.ID_PRODUCTO = ALMACENA.ID_PRODUCTO 
                                 AND ALMACENA.NUM_ALMACEN = ALMACEN.NUM_ALMACEN AND ALMACEN.NUM_ALMACEN=:warehouse");
-        
-        $stmt->bindparam('warehouse',$warehouse);
+
+        $stmt->bindparam('warehouse', $warehouse);
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $res = $stmt->fetchAll();
@@ -238,24 +238,27 @@ function printWarehouseInfo($conn, $warehouse)
 {
 
     $res = getWarehouseInfo($conn, $warehouse);
-    var_dump($res);
+    //var_dump($res);
+    //echo count($res);
     //ECHO $res[0]['LOCALIDAD'];
+    if (count($res) != 0) {
+        echo '<br/>';
+        echo 'En el almacen localizado en ' . ucfirst(strtolower($res[0]['LOCALIDAD']))  . ' contiene los siguientes productos:';
+        echo '<ul>';
 
-    echo '<br/>';
-    echo 'En el almacen localizado en ' . ucfirst(strtolower($res[0]['LOCALIDAD']))  . ' contiene los siguientes productos:';
-    echo '<ul>';
-
-    foreach ($res as $product => $value) {
-        if ($value['NUM_ALMACEN'] == $warehouse) {
-            echo '<li>';
-            echo $value['NOMBRE'];
-            echo '</li>';
+        foreach ($res as $product => $value) {
+            if ($value['NUM_ALMACEN'] == $warehouse) {
+                echo '<li>';
+                echo $value['NOMBRE'];
+                echo '</li>';
+            }
         }
+
+        echo '</ul>';
+    }else{
+        echo "En esta localidad no hay productos dados de alta";
     }
-
-    echo '</ul>';
 }
-
 // ------------ EJERCICIO 7 ------------
 
 // POR TERMINAR POR FALTA DE EXPLICACION DE COOKIES
