@@ -39,16 +39,20 @@ function addCategory($name, $conn)
 //funcion para generar el codigo de la categoria
 function generateCategoryId($conn)
 {
-    $sql = $conn->prepare("SELECT MAX(ID_CATEGORIA) FROM CATEGORIA");
-    $sql->execute();
-    $sql->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $sql->fetchAll();
+    try {
+        $sql = $conn->prepare("SELECT MAX(ID_CATEGORIA) FROM CATEGORIA");
+        $sql->execute();
+        $sql->setFetchMode(PDO::FETCH_ASSOC);
+        $res = $sql->fetchAll();
 
-    $id = (float) substr($res[0]['MAX(ID_CATEGORIA)'], 2) + 1;
+        $id = (float) substr($res[0]['MAX(ID_CATEGORIA)'], 2) + 1;
 
-    $category_code = "C-" . str_pad($id, 3, '0', STR_PAD_LEFT);
+        $category_code = "C-" . str_pad($id, 3, '0', STR_PAD_LEFT);
 
-    return $category_code;
+        return $category_code;
+    } catch (PDOException $e) {
+        echo "<br>Error: " . $e->getMessage();
+    }
 }
 
 // ------------------ EJERCICIO 2 ------------------
@@ -92,42 +96,54 @@ function getNamesOfCategories($conn)
 //funcion para generar el codigo del producto
 function generateProductCod($conn)
 {
-    $sql = $conn->prepare("SELECT MAX(ID_PRODUCTO) FROM PRODUCTO");
-    $sql->execute();
-    $sql->setFetchMode(PDO::FETCH_ASSOC);
-    $res = $sql->fetchAll();
+    try {
+        $sql = $conn->prepare("SELECT MAX(ID_PRODUCTO) FROM PRODUCTO");
+        $sql->execute();
+        $sql->setFetchMode(PDO::FETCH_ASSOC);
+        $res = $sql->fetchAll();
 
-    $id = (float) substr($res[0]['MAX(ID_PRODUCTO)'], 2) + 1;
+        $id = (float) substr($res[0]['MAX(ID_PRODUCTO)'], 2) + 1;
 
-    $product_code = "P" . str_pad($id, 4, '0', STR_PAD_LEFT);
+        $product_code = "P" . str_pad($id, 4, '0', STR_PAD_LEFT);
 
-    return $product_code;
+        return $product_code;
+    } catch (PDOException $e) {
+        echo "<br>Error: " . $e->getMessage();
+    }
 }
 
 //------------ EJERCICIO 3 ------------
 
 function addStorage($conn, $localidad)
 {
-    test_input($localidad);
-    $sql = $conn->prepare("INSERT INTO ALMACEN (LOCALIDAD) VALUES (:localidad)");
-    $sql->bindParam('localidad', $localidad);
-    $sql->execute();
+    try {
+        test_input($localidad);
+        $sql = $conn->prepare("INSERT INTO ALMACEN (LOCALIDAD) VALUES (:localidad)");
+        $sql->bindParam('localidad', $localidad);
+        $sql->execute();
+    } catch (PDOException $e) {
+        echo "<br>Error: " . $e->getMessage();
+    }
 }
 
 // ------------ EJERCICIO 4 ------------
 
 function addProductsStorage($conn, $warehouse, $product_id, $quantity)
 {
-    test_input($quantity);
+    try {
+        test_input($quantity);
 
-    $sql = $conn->prepare(
-        "INSERT INTO ALMACENA (NUM_ALMACEN, ID_PRODUCTO, CANTIDAD) VALUES (:num_warehouse, :product_id, :quaintity)"
-    );
-    $sql->bindParam('num_warehouse', $warehouse);
-    $sql->bindParam('product_id', $product_id);
-    $sql->bindParam('quaintity', $quantity);
+        $sql = $conn->prepare(
+            "INSERT INTO ALMACENA (NUM_ALMACEN, ID_PRODUCTO, CANTIDAD) VALUES (:num_warehouse, :product_id, :quaintity)"
+        );
+        $sql->bindParam('num_warehouse', $warehouse);
+        $sql->bindParam('product_id', $product_id);
+        $sql->bindParam('quaintity', $quantity);
 
-    $sql->execute();
+        $sql->execute();
+    } catch (PDOException $e) {
+        echo "<br>Error: " . $e->getMessage();
+    }
 }
 
 //funcion para generar desplegable de los almacenes
@@ -179,18 +195,22 @@ function getNamesOfProduct($conn)
 // se mostrará la cantidad disponible del producto seleccionado en cada uno de los almacenes.
 function getTotalProducts($conn, $product)
 {
-    test_input($product);
-    $sql = $conn->prepare("SELECT CANTIDAD,LOCALIDAD 
+    try {
+        test_input($product);
+        $sql = $conn->prepare("SELECT CANTIDAD,LOCALIDAD 
                             FROM PRODUCTO,ALMACENA,ALMACEN 
                             WHERE ALMACENA.ID_PRODUCTO=PRODUCTO.ID_PRODUCTO 
                             AND ALMACENA.NUM_ALMACEN=ALMACEN.NUM_ALMACEN 
                             AND PRODUCTO.ID_PRODUCTO=:producto");
-    $sql->bindParam('producto', $product);
-    $sql->execute();
-    $sql->setFetchMode(PDO::FETCH_ASSOC);
-    $resultado = $sql->fetchAll();
-    //echo "<pre>";var_dump($resultado);echo "</pre>";
-    return $resultado;
+        $sql->bindParam('producto', $product);
+        $sql->execute();
+        $sql->setFetchMode(PDO::FETCH_ASSOC);
+        $resultado = $sql->fetchAll();
+        //echo "<pre>";var_dump($resultado);echo "</pre>";
+        return $resultado;
+    } catch (PDOException $e) {
+        echo "<br>Error: " . $e->getMessage();
+    }
 }
 
 // ------------ EJERCICIO 6 ------------
@@ -214,6 +234,7 @@ function getWarehouseInfo($conn, $warehouse)
 
 function printWarehouseInfo($conn, $warehouse)
 {
+
     $res = getWarehouseInfo($conn, $warehouse);
 
     echo '<br/>';
@@ -275,38 +296,49 @@ function isValidDni($nif)
 }
 function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu)
 {
-    test_input($nif);
-    test_input($nombre);
-    test_input($apellido);
-    test_input($cp);
-    test_input($direc);
-    test_input($ciu);
-    $sql = $conn->prepare("INSERT INTO CLIENTE (NIF,NOMBRE,APELLIDO,CP,DIRECCION,CIUDAD) VALUES (:nif,:nombre,:apellido,:cp,
+    try {
+        test_input($nif);
+        test_input($nombre);
+        test_input($apellido);
+        test_input($cp);
+        test_input($direc);
+        test_input($ciu);
+        $sql = $conn->prepare("INSERT INTO CLIENTE (NIF,NOMBRE,APELLIDO,CP,DIRECCION,CIUDAD) VALUES (:nif,:nombre,:apellido,:cp,
     :direccion,:ciudad)");
-    $sql->bindParam('nif', $nif);
-    $sql->bindParam('nombre', $nombre);
-    $sql->bindParam('apellido', $apellido);
-    $sql->bindParam('cp', $cp);
-    $sql->bindParam('direccion', $direc);
-    $sql->bindParam('ciudad', $ciu);
-    $sql->execute();
-    echo "Se ha dado de alta al cliente</br>";
+        $sql->bindParam('nif', $nif);
+        $sql->bindParam('nombre', $nombre);
+        $sql->bindParam('apellido', $apellido);
+        $sql->bindParam('cp', $cp);
+        $sql->bindParam('direccion', $direc);
+        $sql->bindParam('ciudad', $ciu);
+        $sql->execute();
+        echo "Se ha dado de alta al cliente</br>";
+    } catch (PDOException $e) {
+        $error = $e->getCode();
+        if($error = '2300'){
+            echo "DNI EXISTENTE. NO SE PUEDE DAR DE ALTA <BR>";
+        }
+        //echo "<br>Error: " . $e->getMessage();  
+    }
 }
 // Compra de Productos (compro.php): el cliente podrá realizar la compra de un solo producto
 // siempre que haya disponibilidad del mismo.
-function buyProduct($conn,$nif,$producto, $cantidad)
+function buyProduct($conn, $nif, $producto, $cantidad)
 {
-    test_input($cantidad);  
-    $fecha = new DateTime();
-    $stringFecha = $fecha->format("Y-m-d");
-    $sql = $conn->prepare("INSERT INTO COMPRA (NIF,ID_PRODUCTO,FECHA_COMPRA,UNIDADES) VALUES (:nif,:idproducto,:fecha,:unidades)");
-    $sql->bindParam('nif', $nif);
-    $sql->bindParam('idproducto', $producto);
-    $sql->bindParam('fecha', $stringFecha);
-    $sql->bindParam('unidades', $cantidad);
-    $sql->execute();
-    echo "Se ha realizado su compra satisfactoriamente</br>";
-
+    try {
+        test_input($cantidad);
+        $fecha = new DateTime();
+        $stringFecha = $fecha->format("Y-m-d");
+        $sql = $conn->prepare("INSERT INTO COMPRA (NIF,ID_PRODUCTO,FECHA_COMPRA,UNIDADES) VALUES (:nif,:idproducto,:fecha,:unidades)");
+        $sql->bindParam('nif', $nif);
+        $sql->bindParam('idproducto', $producto);
+        $sql->bindParam('fecha', $stringFecha);
+        $sql->bindParam('unidades', $cantidad);
+        $sql->execute();
+        echo "Se ha realizado su compra satisfactoriamente</br>";
+    } catch (PDOException $e) {
+        echo "<br>Error: " . $e->getMessage();
+    }
 }
 function isAvailable($conn, $producto, $cantidad)
 {
@@ -316,12 +348,12 @@ function isAvailable($conn, $producto, $cantidad)
     foreach ($result as $resultado => $value) {
         $quantity = $value['CANTIDAD'];
     }
-     if($quantity <=0 || !is_numeric($cantidad)){
-        $valid=false;
-        echo"Por favor introduzca una cantidad correcta</br>";
-    }else if ($cantidad > $quantity) {
-        $valid=false;
-        echo"No hay existencias suficientes</br>";
+    if ($quantity <= 0 || !is_numeric($cantidad)) {
+        $valid = false;
+        echo "Por favor introduzca una cantidad correcta</br>";
+    } else if ($cantidad > $quantity) {
+        $valid = false;
+        echo "No hay existencias suficientes</br>";
     }
     return $valid;
 }
