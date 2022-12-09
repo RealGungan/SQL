@@ -221,14 +221,16 @@ function getWarehouseInfo($conn, $warehouse)
         $stmt = $conn->prepare("SELECT PRODUCTO.NOMBRE, ALMACEN.NUM_ALMACEN, ALMACEN.LOCALIDAD
                                 FROM PRODUCTO, ALMACENA, ALMACEN 
                                 WHERE PRODUCTO.ID_PRODUCTO = ALMACENA.ID_PRODUCTO 
-                                AND ALMACENA.NUM_ALMACEN = ALMACEN.NUM_ALMACEN");
+                                AND ALMACENA.NUM_ALMACEN = ALMACEN.NUM_ALMACEN AND ALMACEN.NUM_ALMACEN=:warehouse");
+        
+        $stmt->bindparam('warehouse',$warehouse);
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $res = $stmt->fetchAll();
-
+        var_dump($res);
         return $res;
     } catch (PDOException $e) {
-        return [];
+        echo "<br>Error: " . $e->getMessage();
     }
 }
 
@@ -236,9 +238,11 @@ function printWarehouseInfo($conn, $warehouse)
 {
 
     $res = getWarehouseInfo($conn, $warehouse);
+    var_dump($res);
+    //ECHO $res[0]['LOCALIDAD'];
 
     echo '<br/>';
-    echo 'En el almacen localizado en ' . ucfirst(strtolower($res[$warehouse]['LOCALIDAD']))  . ' contiene los siguientes productos:';
+    echo 'En el almacen localizado en ' . ucfirst(strtolower($res[0]['LOCALIDAD']))  . ' contiene los siguientes productos:';
     echo '<ul>';
 
     foreach ($res as $product => $value) {
