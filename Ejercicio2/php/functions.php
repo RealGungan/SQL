@@ -331,8 +331,25 @@ function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu)
         //echo "<br>Error: " . $e->getMessage();  
     }
 }
-// Compra de Productos (compro.php): el cliente podrá realizar la compra de un solo producto
+// Ejercicio 9
+//Compra de Productos (compro.php): el cliente podrá realizar la compra de un solo producto
 // siempre que haya disponibilidad del mismo.
+function isDniClient($conn,$dni){
+    $valid=true;
+    test_input($dni);
+    $sql = $conn->prepare("SELECT COUNT(*) FROM CLIENTE WHERE CLIENTE.NIF=:dni");
+    $sql->bindParam('dni', $dni);
+    $sql->execute();
+    $sql->setFetchMode(PDO::FETCH_NUM);
+    $resultado = $sql->fetchAll();
+    //var_dump($resultado);
+    $resultado= $resultado[0][0];
+    if($resultado <= 0){
+        $valid=false;
+    }
+return $valid;
+    // mysql_num_rows
+}
 function buyProduct($conn, $nif, $producto, $cantidad)
 {
     $valido=true;
