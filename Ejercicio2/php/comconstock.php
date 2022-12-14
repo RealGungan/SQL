@@ -25,7 +25,7 @@
         <br /><br />
         <label for="name">Cantidad y Alamacén</label>
         <br /><br />
-        <input type="submit" name="submit" id="submit" value="Dar de alta">
+        <input type="submit" name="submit" id="submit" value="Consultar stock">
     </form>
 </body>
 
@@ -34,14 +34,18 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST["submit"])) {
-        $product=$_POST['products'];
-        $resultado=getTotalProducts($conn, $product);
-        foreach($resultado as $resultado =>$value){
-            echo "Hay una cantidad de ".$value['CANTIDAD']." ";
-            echo "En la localidad de ".$value['LOCALIDAD']." ";
+        $product = $_POST['products'];
+        $resultado = getTotalProducts($conn, $product);
+        $total = 0;
+
+        foreach ($resultado as $resultado => $value) {
+            echo "Hay " . $value['CANTIDAD'] . " en la localidad de " . $value['LOCALIDAD'];
             echo "</br>";
+
+            $total += $value['CANTIDAD'];
         }
-    }else{
+        echo '</br>TOTAL: ' . $total;
+    } else {
         echo "Por favor introduza y seleccione valores correctos";
     }
 }
