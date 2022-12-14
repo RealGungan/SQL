@@ -53,23 +53,15 @@
 
 <?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    //$conn = connection();
     if (isset($_POST["submit"])) {
-        $nif = $_POST['dnies'];
-        $producto = $_POST['products'];
-        $cantidad = $_POST['cantidad'];
-
-        $valido = isAvailable($conn, $producto, $cantidad);
-        if ($valido == false) {
-            echo "No es posible realizar la compra </br>";
+        $conn = connection();
+        if (isProduct($conn, $warehouse, $product)) {
+            addProductsStorage($conn, $_POST['warehouse'], $_POST['product'],  $_POST['quantity']);
         } else {
-            $valid = buyProduct($conn, $nif, $producto, $cantidad);
-            if ($valid) {
-                updateTableAlmacena($conn, $producto, $cantidad);
-            }
+            updateProduct($conn, $_POST['warehouse'], $_POST['product'], $_POST['quantity']);
         }
     } else {
-        echo "Por favor, introduzca y elija valores correcto </br>";
+        echo "Por favor introduza y seleccione valores correctos";
     }
 }
 ?>

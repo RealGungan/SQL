@@ -127,26 +127,55 @@ function addStorage($conn, $localidad)
 }
 
 // ------------ EJERCICIO 4 ------------
+function isProduct($conn,$warehouse,$product){
+    try{
+        $valid=true;
+        
+        $sql = $conn->prepare("SELECT COUNT(ID_PRODUCTO) FROM ALMACENA WHERE ALMACENA.ID_PRODUCTO=:product AND
+        ALMACENA.NUM_ALMACEN=:warehouse");
+        $sql->bindParam('product', $product);
+        $sql->bindParam('warehouse', $warehouse);
+        $sql->execute();
+        $sql->setFetchMode(PDO::FETCH_NUM);
+        $resultado = $sql->fetchAll();
+        //var_dump($resultado);
+        $resultado= $resultado[0][0];
+        if($resultado <= 0){
+            $valid=false;
+        }
+    return $valid;
 
+    }catch(PDOException $e){
+        echo "<br>Error: " . $e->getMessage();
+    }
+
+}
 function addProductsStorage($conn, $warehouse, $product_id, $quantity)
 {
     try {
         test_input($quantity);
         //he usado ignore para que si existe problemas de clave primarias, vaya a la siguiente peticion y busque los valores para aprovisionar
         $sql = $conn->prepare(
-            "INSERT IGNORE INTO ALMACENA (NUM_ALMACEN, ID_PRODUCTO, CANTIDAD) VALUES (:num_warehouse, :product_id, :quaintity)");
+            "INSERT INTO ALMACENA (NUM_ALMACEN, ID_PRODUCTO, CANTIDAD) VALUES (:num_warehouse, :product_id, :quaintity)");
         $sql->bindParam('num_warehouse', $warehouse);
         $sql->bindParam('product_id', $product_id);
         $sql->bindParam('quaintity', $quantity);
         $sql->execute();
-        $sql2 = $conn->prepare("REPLACE INTO ALMACENA VALUES (:num_warehouse, :product_id, :quaintity)");
-        $sql2->bindParam('num_warehouse', $warehouse);
-        $sql2->bindParam('product_id', $product_id);
-        $sql2->bindParam('quaintity', $quantity);
-        $sql2->execute();
     } catch (PDOException $e) {
         echo "<br>Error: " . $e->getMessage();
     }
+}
+function updateProduct($conn, $warehouse, $product_id, $quantity){
+    try{
+           $sql = $conn->prepare("UPDATE INTO ALMACENA VALUES (:num_warehouse, :product_id, :quaintity)");
+    $sql->bindParam('num_warehouse', $warehouse);
+    $sql->bindParam('product_id', $product_id);
+    $sql->bindParam('quaintity', $quantity);
+    $sql->execute(); 
+    }catch(PDOException $e){
+        echo "<br>Error: " . $e->getMessage();
+    }
+
 }
 
 //funcion para generar desplegable de los almacenes
@@ -230,7 +259,7 @@ function getWarehouseInfo($conn, $warehouse)
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $res = $stmt->fetchAll();
-        //var_dump($res);
+        var_dump($res);
         return $res;
     } catch (PDOException $e) {
         echo "<br>Error: " . $e->getMessage();
@@ -241,8 +270,8 @@ function printWarehouseInfo($conn, $warehouse)
 {
 
     $res = getWarehouseInfo($conn, $warehouse);
-    //var_dump($res);
-    //echo count($res);
+    var_dump($res);
+    echo count($res);
     //ECHO $res[0]['LOCALIDAD'];
     if (count($res) != 0) {
         echo '<br/>';
@@ -262,6 +291,7 @@ function printWarehouseInfo($conn, $warehouse)
         echo "En esta localidad no hay productos dados de alta";
     }
 }
+
 // ------------ EJERCICIO 7 ------------
 
 // POR TERMINAR POR FALTA DE EXPLICACION DE COOKIES
@@ -292,7 +322,7 @@ function isValidDni($nif)
     $valido = true;
     $letra = substr($nif, 8);
     $numeros = substr($nif, 0, 7);
-    if (strlen($nif) > 9 || strlen($nif) < 9) {
+    if (strlen($nif) != 9) {
         echo "Error. La longitud no es la correcta. No es posible dar de alta</br>";
         $valido = false;
     } else if (!ctype_alpha($letra)) {
@@ -414,6 +444,7 @@ function updateTableAlmacena($conn, $producto, $cantidad)
         echo "<br>Error: " . $e->getMessage();
     }
 }
+
 //funcion para tratar los datos
 function test_input($data)
 {
