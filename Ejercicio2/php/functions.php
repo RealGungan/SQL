@@ -314,13 +314,42 @@ function getDnies($conn)
 
         return $resultado;
     } catch (PDOException $e) {
-        return [];
+        $error = $e->getCode();
     }
 
     return $resultado;
 }
-function getBuyInformation()
+function getPurchaseInfo($conn,$dni,$date1,$date2)
 {
+    try{
+        $sql = $conn->prepare("SELECT PRODUCTO.NOMBRE,PRODUCTO.PRECIO,PRODUCTO.PRECIO,COMPRA.FECHA_COMPRA,COMPRA.UNIDADES FROM PRODUCTO,COMPRA WHERE
+        PRODUCTO.ID_PRODUCTO=COMPRA.ID_PRODUCTO AND COMPRA.NIF=:dni and (COMPRA.FECHA_COMPRA >=:date1 and COMPRA.FECHA_COMPRA <:date2)");
+        $sql->bindParam('dni', $dni);
+        $sql->bindParam('date1', $date1);
+        $sql->bindParam('date2', $date2);
+        $sql->execute();
+        $sql->setFetchMode(PDO::FETCH_ASSOC);
+        $result = $sql->fetchAll();
+        $total=0.0;
+       foreach ($result as $key => $value) {
+        $total+=floatval($value['PRECIO'])*floatval($value['UNIDADES']); 
+       }
+       $result['total']=$total;
+        return $result; 
+
+    }catch(PDOException $e){
+        $error = $e->getCode();
+    }
+}
+function printPurchaseInfo($result){
+    foreach ($result as $key => $value) {
+        if( is_numeric($key)){
+            echo "Fecha de Compra: ".$value['FECHA_COMPRA']."</br>";
+            echo "Nombre del producto: ".$value['NOMBRE']."</br>";       
+            echo "Precio del producto: ".(string)$value['PRECIO']."</br></br>";
+        }
+       }
+       echo "El total de sus compras asciende a: ".$result['total']." euros";
 }
 // ------------ EJERCICIO 8 ------------
 
@@ -391,19 +420,19 @@ function isDniClient($conn, $dni)
     // mysql_num_rows
 }
 
-function buyProduct($conn, $nif, $producto, $cantidad)
+function buyProduct($conn, $dni, $product, $quantity)
 {
     $valido = true;
     try {
 
-        test_input($cantidad);
+        test_input($quantity);
         $fecha = new DateTime();
         $stringFecha = $fecha->format("Y-m-d");
         $sql = $conn->prepare("INSERT INTO COMPRA (NIF,ID_PRODUCTO,FECHA_COMPRA,UNIDADES) VALUES (:nif,:id_producto,:fecha,:unidades)");
-        $sql->bindParam('nif', $nif);
-        $sql->bindParam('id_producto', $producto);
+        $sql->bindParam('nif', $dni);
+        $sql->bindParam('id_producto', $product);
         $sql->bindParam('fecha', $stringFecha);
-        $sql->bindParam('unidades', $cantidad);
+        $sql->bindParam('unidades', $quantity);
         $sql->execute();
         echo "Se ha realizado su compra satisfactoriamente</br>";
     } catch (PDOException $e) {

@@ -18,17 +18,19 @@
         //$products = getNamesOfProduct($conn);
         ?>
         <label for="name">DNI Clientes</label>
-        <select name="products">
+        <select name="dnies">
             <?php foreach ($clients as $client => $value) : ?>
                 <option value="<?php echo $value['NIF'] ?>"> <?php echo $value['NIF'] ?> </option>
             <?php endforeach; ?>
         </select>
         <br /><br />
-        <input type="text" name="date1" id="date1" value="Fecha Inicio">
+        <label for="">Desde</label>
+        <input type="text" name="date1" id="date1">
         <br /><br />
-        <input type="text" name="date2" id="date2" value="Fecha Fin">
+        <label for="">Hasta</label>
+        <input type="text" name="date2" id="date2">
         <br /><br />
-        <input type="submit" name="submit" id="submit" value="Dar de alta">
+        <input type="submit" name="submit" id="submit">
     </form>
 </body>
 
@@ -37,6 +39,11 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST["submit"])) {
+        $result=getPurchaseInfo($conn,$_POST['dnies'],$_POST['date1'],$_POST['date2']);
+        printPurchaseInfo($result);
+
+    }else{
+        echo "Por favor rellene y seleccione los campos necesarios <br>.";
     }
 }
 ?>

@@ -49,8 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             if (isAvailable($conn, $product, $quantity)) {
                 checkWarehouseQuantity($conn, $product, $quantity, 0);
+                buyProduct($conn, $dni, $product, $quantity);
 
                 echo "</br>Actualizado tabla Almacena con nueva cantidad";
+                echo "</br>Actualizado tabla Compra con nueva registro";
             }
         }
 
