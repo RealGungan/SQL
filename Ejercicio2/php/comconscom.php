@@ -38,7 +38,7 @@
 
 <?php
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (isset($_POST["submit"])) {
+    if (isset($_POST["submit"])&& !empty($_POST['date1']) && !empty($_POST['date2'])) {
         $result=getPurchaseInfo($conn,$_POST['dnies'],$_POST['date1'],$_POST['date2']);
         printPurchaseInfo($result);
 
