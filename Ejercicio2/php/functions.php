@@ -140,9 +140,9 @@ function isProduct($conn, $warehouse, $product)
         $sql->setFetchMode(PDO::FETCH_NUM);
         $resultado = $sql->fetchAll();
         //var_dump($resultado);
-        $resultado = $resultado[0][0];
-        if ($resultado <= 0) {
-            $valid = false;
+        $resultado= $resultado[0][0];
+        if($resultado <= 0){
+            $valid=false;
         }
         return $valid;
     } catch (PDOException $e) {
@@ -250,7 +250,7 @@ function getTotalProducts($conn, $product)
         $sql->execute();
         $sql->setFetchMode(PDO::FETCH_ASSOC);
         $resultado = $sql->fetchAll();
-        //echo "<pre>";var_dump($resultado);echo "</pre>";
+
         return $resultado;
     } catch (PDOException $e) {
         echo "<br>Error: " . $e->getMessage();
@@ -262,7 +262,7 @@ function getTotalProducts($conn, $product)
 function getWarehouseInfo($conn, $warehouse)
 {
     try {
-        $stmt = $conn->prepare("SELECT PRODUCTO.NOMBRE, ALMACEN.NUM_ALMACEN, ALMACEN.LOCALIDAD
+        $stmt = $conn->prepare("SELECT PRODUCTO.NOMBRE, CANTIDAD, ALMACEN.NUM_ALMACEN, ALMACEN.LOCALIDAD
                                 FROM PRODUCTO, ALMACENA, ALMACEN 
                                 WHERE PRODUCTO.ID_PRODUCTO = ALMACENA.ID_PRODUCTO 
                                 AND ALMACENA.NUM_ALMACEN = ALMACEN.NUM_ALMACEN AND ALMACEN.NUM_ALMACEN=:warehouse");
@@ -271,7 +271,7 @@ function getWarehouseInfo($conn, $warehouse)
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $res = $stmt->fetchAll();
-        var_dump($res);
+
         return $res;
     } catch (PDOException $e) {
         echo "<br>Error: " . $e->getMessage();
@@ -280,11 +280,8 @@ function getWarehouseInfo($conn, $warehouse)
 
 function printWarehouseInfo($conn, $warehouse)
 {
-
     $res = getWarehouseInfo($conn, $warehouse);
-    var_dump($res);
-    echo count($res);
-    //ECHO $res[0]['LOCALIDAD'];
+
     if (count($res) != 0) {
         echo '<br/>';
         echo 'En el almacen localizado en ' . ucfirst(strtolower($res[0]['LOCALIDAD']))  . ' contiene los siguientes productos:';
@@ -293,7 +290,7 @@ function printWarehouseInfo($conn, $warehouse)
         foreach ($res as $product => $value) {
             if ($value['NUM_ALMACEN'] == $warehouse) {
                 echo '<li>';
-                echo $value['NOMBRE'];
+                echo $value['NOMBRE'] . ' -> CANTIDAD: ' . $value['CANTIDAD'];
                 echo '</li>';
             }
         }
@@ -386,9 +383,9 @@ function isDniClient($conn, $dni)
     $sql->setFetchMode(PDO::FETCH_NUM);
     $resultado = $sql->fetchAll();
     //var_dump($resultado);
-    $resultado = $resultado[0][0];
-    if ($resultado <= 0) {
-        $valid = false;
+    $resultado= $resultado[0][0];
+    if($resultado <= 0){
+        $valid=false;
     }
     return $valid;
     // mysql_num_rows
@@ -438,15 +435,12 @@ function updateTableAlmacena($conn, $producto, $cantidad)
 {
     try {
         test_input($cantidad);
-        //$cantidad_nueva=
         $stmt = $conn->prepare("SELECT CANTIDAD FROM ALMACENA WHERE ALMACENA.ID_PRODUCTO=:producto ");
         $stmt->bindparam('producto', $producto);
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_NUM);
         $resultado = $stmt->fetchAll();
-        //var_dump($resultado);
         $quantity = $resultado[0][0];
-        //echo $quantity;
         $new_quantity = intval($quantity - $cantidad);
         $stmt2 = $conn->prepare("UPDATE ALMACENA  SET CANTIDAD=:new_quantity WHERE ALMACENA.ID_PRODUCTO=:producto");
         $stmt2->bindparam('new_quantity', $new_quantity);
