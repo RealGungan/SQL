@@ -38,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $resultado = getTotalProducts($conn, $product);
         $total = 0;
 
+        echo '</br>';
+
         foreach ($resultado as $resultado => $value) {
             echo "Hay " . $value['CANTIDAD'] . " en la localidad de " . $value['LOCALIDAD'];
             echo "</br>";

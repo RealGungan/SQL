@@ -41,18 +41,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //$conn = connection();
     if (isset($_POST["submit"])) {
         // $nif = $_POST['dnies'];
-        $dni=$_POST['dni'];
-        $producto = $_POST['products'];
-        $cantidad = $_POST['cantidad'];
-        if(!isDniClient($conn,$dni)){
-         echo "No existe registro del dni Introducido";
-        }else{
-            if(!isAvailable($conn, $producto, $cantidad)){
-                echo "No es posible realizar la compra </br>";
-            }else{
-                if(buyProduct($conn, $dni, $producto, $cantidad)){
-                    updateTableAlmacena($conn,$producto, $cantidad);
-                }
+        $dni = $_POST['dni'];
+        $product = $_POST['products'];
+        $quantity = $_POST['cantidad'];
+        if (!isDniClient($conn, $dni)) {
+            echo "No existe registro del dni Introducido";
+        } else {
+            if (isAvailable($conn, $product, $quantity)) {
+                checkWarehouseQuantity($conn, $product, $quantity, 0);
+
+                echo "</br>Actualizado tabla Almacena con nueva cantidad";
             }
         }
 
