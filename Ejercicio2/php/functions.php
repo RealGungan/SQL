@@ -127,10 +127,11 @@ function addStorage($conn, $localidad)
 }
 
 // ------------ EJERCICIO 4 ------------
-function isProduct($conn,$warehouse,$product){
-    try{
-        $valid=true;
-        
+function isProduct($conn, $warehouse, $product)
+{
+    try {
+        $valid = true;
+
         $sql = $conn->prepare("SELECT COUNT(ID_PRODUCTO) FROM ALMACENA WHERE ALMACENA.ID_PRODUCTO=:product AND
         ALMACENA.NUM_ALMACEN=:warehouse");
         $sql->bindParam('product', $product);
@@ -138,17 +139,15 @@ function isProduct($conn,$warehouse,$product){
         $sql->execute();
         $sql->setFetchMode(PDO::FETCH_NUM);
         $resultado = $sql->fetchAll();
-        //var_dump($resultado);
-        $resultado= $resultado[0][0];
-        if($resultado <= 0){
-            $valid=false;
-        }
-    return $valid;
 
-    }catch(PDOException $e){
+        $resultado = $resultado[0][0];
+        if ($resultado <= 0) {
+            $valid = false;
+        }
+        return $valid;
+    } catch (PDOException $e) {
         echo "<br>Error: " . $e->getMessage();
     }
-
 }
 function addProductsStorage($conn, $warehouse, $product_id, $quantity)
 {
@@ -156,7 +155,8 @@ function addProductsStorage($conn, $warehouse, $product_id, $quantity)
         test_input($quantity);
         //he usado ignore para que si existe problemas de clave primarias, vaya a la siguiente peticion y busque los valores para aprovisionar
         $sql = $conn->prepare(
-            "INSERT INTO ALMACENA (NUM_ALMACEN, ID_PRODUCTO, CANTIDAD) VALUES (:num_warehouse, :product_id, :quaintity)");
+            "INSERT INTO ALMACENA (NUM_ALMACEN, ID_PRODUCTO, CANTIDAD) VALUES (:num_warehouse, :product_id, :quaintity)"
+        );
         $sql->bindParam('num_warehouse', $warehouse);
         $sql->bindParam('product_id', $product_id);
         $sql->bindParam('quaintity', $quantity);
@@ -165,17 +165,17 @@ function addProductsStorage($conn, $warehouse, $product_id, $quantity)
         echo "<br>Error: " . $e->getMessage();
     }
 }
-function updateProduct($conn, $warehouse, $product_id, $quantity){
-    try{
-           $sql = $conn->prepare("UPDATE INTO ALMACENA VALUES (:num_warehouse, :product_id, :quaintity)");
-    $sql->bindParam('num_warehouse', $warehouse);
-    $sql->bindParam('product_id', $product_id);
-    $sql->bindParam('quaintity', $quantity);
-    $sql->execute(); 
-    }catch(PDOException $e){
+function updateProduct($conn, $warehouse, $product_id, $quantity)
+{
+    try {
+        $sql = $conn->prepare("UPDATE INTO ALMACENA VALUES (:num_warehouse, :product_id, :quaintity)");
+        $sql->bindParam('num_warehouse', $warehouse);
+        $sql->bindParam('product_id', $product_id);
+        $sql->bindParam('quaintity', $quantity);
+        $sql->execute();
+    } catch (PDOException $e) {
         echo "<br>Error: " . $e->getMessage();
     }
-
 }
 
 //funcion para generar desplegable de los almacenes
@@ -238,7 +238,7 @@ function getTotalProducts($conn, $product)
         $sql->execute();
         $sql->setFetchMode(PDO::FETCH_ASSOC);
         $resultado = $sql->fetchAll();
-        //echo "<pre>";var_dump($resultado);echo "</pre>";
+
         return $resultado;
     } catch (PDOException $e) {
         echo "<br>Error: " . $e->getMessage();
@@ -250,7 +250,7 @@ function getTotalProducts($conn, $product)
 function getWarehouseInfo($conn, $warehouse)
 {
     try {
-        $stmt = $conn->prepare("SELECT PRODUCTO.NOMBRE, ALMACEN.NUM_ALMACEN, ALMACEN.LOCALIDAD
+        $stmt = $conn->prepare("SELECT PRODUCTO.NOMBRE, CANTIDAD, ALMACEN.NUM_ALMACEN, ALMACEN.LOCALIDAD
                                 FROM PRODUCTO, ALMACENA, ALMACEN 
                                 WHERE PRODUCTO.ID_PRODUCTO = ALMACENA.ID_PRODUCTO 
                                 AND ALMACENA.NUM_ALMACEN = ALMACEN.NUM_ALMACEN AND ALMACEN.NUM_ALMACEN=:warehouse");
@@ -259,7 +259,7 @@ function getWarehouseInfo($conn, $warehouse)
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $res = $stmt->fetchAll();
-        var_dump($res);
+
         return $res;
     } catch (PDOException $e) {
         echo "<br>Error: " . $e->getMessage();
@@ -268,11 +268,8 @@ function getWarehouseInfo($conn, $warehouse)
 
 function printWarehouseInfo($conn, $warehouse)
 {
-
     $res = getWarehouseInfo($conn, $warehouse);
-    var_dump($res);
-    echo count($res);
-    //ECHO $res[0]['LOCALIDAD'];
+
     if (count($res) != 0) {
         echo '<br/>';
         echo 'En el almacen localizado en ' . ucfirst(strtolower($res[0]['LOCALIDAD']))  . ' contiene los siguientes productos:';
@@ -281,7 +278,7 @@ function printWarehouseInfo($conn, $warehouse)
         foreach ($res as $product => $value) {
             if ($value['NUM_ALMACEN'] == $warehouse) {
                 echo '<li>';
-                echo $value['NOMBRE'];
+                echo $value['NOMBRE'] . ' -> CANTIDAD: ' . $value['CANTIDAD'];
                 echo '</li>';
             }
         }
@@ -364,27 +361,27 @@ function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu)
 // Ejercicio 9
 //Compra de Productos (compro.php): el cliente podrá realizar la compra de un solo producto
 // siempre que haya disponibilidad del mismo.
-function isDniClient($conn,$dni){
-    $valid=true;
+function isDniClient($conn, $dni)
+{
+    $valid = true;
     test_input($dni);
     $sql = $conn->prepare("SELECT COUNT(NIF) FROM CLIENTE WHERE CLIENTE.NIF=:dni");
     $sql->bindParam('dni', $dni);
     $sql->execute();
     $sql->setFetchMode(PDO::FETCH_NUM);
     $resultado = $sql->fetchAll();
-    //var_dump($resultado);
-    $resultado= $resultado[0][0];
-    if($resultado <= 0){
-        $valid=false;
+    $resultado = $resultado[0][0];
+    if ($resultado <= 0) {
+        $valid = false;
     }
-return $valid;
+    return $valid;
     // mysql_num_rows
 }
 function buyProduct($conn, $nif, $producto, $cantidad)
 {
-    $valido=true;
+    $valido = true;
     try {
-        
+
         test_input($cantidad);
         $fecha = new DateTime();
         $stringFecha = $fecha->format("Y-m-d");
@@ -396,7 +393,7 @@ function buyProduct($conn, $nif, $producto, $cantidad)
         $sql->execute();
         echo "Se ha realizado su compra satisfactoriamente</br>";
     } catch (PDOException $e) {
-        $valido=false;
+        $valido = false;
         $error = $e->getCode();
         if ($error = '2300') {
             echo "ESTE DNI YA HA REALIZADO COMPRA <BR>";
@@ -425,15 +422,12 @@ function updateTableAlmacena($conn, $producto, $cantidad)
 {
     try {
         test_input($cantidad);
-        //$cantidad_nueva=
         $stmt = $conn->prepare("SELECT CANTIDAD FROM ALMACENA WHERE ALMACENA.ID_PRODUCTO=:producto ");
         $stmt->bindparam('producto', $producto);
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_NUM);
         $resultado = $stmt->fetchAll();
-        //var_dump($resultado);
         $quantity = $resultado[0][0];
-        //echo $quantity;
         $new_quantity = intval($quantity - $cantidad);
         $stmt2 = $conn->prepare("UPDATE ALMACENA  SET CANTIDAD=:new_quantity WHERE ALMACENA.ID_PRODUCTO=:producto");
         $stmt2->bindparam('new_quantity', $new_quantity);
