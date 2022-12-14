@@ -52,16 +52,19 @@
 
 
 <?php
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST["submit"])) {
         $conn = connection();
-        if (isProduct($conn, $warehouse, $product)) {
-            addProductsStorage($conn, $_POST['warehouse'], $_POST['product'],  $_POST['quantity']);
-        } else {
+        if (isProduct($conn, $_POST['warehouse'], $_POST['product'])) {
+
             updateProduct($conn, $_POST['warehouse'], $_POST['product'], $_POST['quantity']);
+        } else {
+            addProductsStorage($conn, $_POST['warehouse'], $_POST['product'],  $_POST['quantity']);
         }
     } else {
         echo "Por favor introduza y seleccione valores correctos";
     }
 }
+
 ?>
