@@ -12,3 +12,8 @@ a {
 a:hover {
     color: red;
 }
+div#container{
+    display: flex;  
+    justify-content: center;
+    align-items: center;  
+}

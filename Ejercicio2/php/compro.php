@@ -15,15 +15,10 @@
         include("functions.php");
         $conn = connection();
         $products = getNamesOfProduct($conn);
-        $dnies = getDnies($conn);
         $productos = getNamesOfProduct($conn);
         ?>
         <label for="name">DNI Clientes</label>
-        <select name="dnies">
-            <?php foreach ($dnies as $dnie => $value) : ?>
-                <option value="<?php echo $value['NIF'] ?>"> <?php echo $value['NIF'] ?> </option>
-            <?php endforeach; ?>
-        </select>
+        <input type="text" name="dni">
         <br /><br />
         <label for="name">Producto</label>
         <select name="products">
@@ -45,16 +40,31 @@
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     //$conn = connection();
     if (isset($_POST["submit"])) {
-        $nif = $_POST['dnies'];
+        // $nif = $_POST['dnies'];
+        $dni=$_POST['dni'];
         $producto = $_POST['products'];
         $cantidad = $_POST['cantidad'];
-
-        $valido = isAvailable($conn, $producto, $cantidad);
-        if ($valido == false) {
-            echo "No es posible realizar la compra </br>";
-        } else {
-            buyProduct($conn, $nif, $producto, $cantidad);
+        if(!isDniClient($conn,$dni)){
+         echo "No existe registro del dni Introducido";
+        }else{
+            if(!isAvailable($conn, $producto, $cantidad)){
+                echo "No es posible realizar la compra </br>";
+            }else{
+                if(buyProduct($conn, $dni, $producto, $cantidad)){
+                    updateTableAlmacena($conn,$producto, $cantidad);
+                }
+            }
         }
+
+        // $valido = isAvailable($conn, $producto, $cantidad);
+        // if ($valido == false) {
+        //     echo "No es posible realizar la compra </br>";
+        // } else {
+        //     $valid=buyProduct($conn, $nif, $producto, $cantidad);
+        //     if($valid){
+        //       updateTableAlmacena($conn,$producto, $cantidad);  
+        //     }  
+        // }
     } else {
         echo "Por favor, introduzca y elija valores correcto </br>";
     }

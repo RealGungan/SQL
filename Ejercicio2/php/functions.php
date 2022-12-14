@@ -230,7 +230,7 @@ function getWarehouseInfo($conn, $warehouse)
         $stmt->execute();
         $stmt->setFetchMode(PDO::FETCH_ASSOC);
         $res = $stmt->fetchAll();
-        var_dump($res);
+        //var_dump($res);
         return $res;
     } catch (PDOException $e) {
         echo "<br>Error: " . $e->getMessage();
@@ -337,7 +337,7 @@ function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu)
 function isDniClient($conn,$dni){
     $valid=true;
     test_input($dni);
-    $sql = $conn->prepare("SELECT COUNT(*) FROM CLIENTE WHERE CLIENTE.NIF=:dni");
+    $sql = $conn->prepare("SELECT COUNT(NIF) FROM CLIENTE WHERE CLIENTE.NIF=:dni");
     $sql->bindParam('dni', $dni);
     $sql->execute();
     $sql->setFetchMode(PDO::FETCH_NUM);
