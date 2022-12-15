@@ -319,9 +319,9 @@ function getDnies($conn)
 
     return $resultado;
 }
-function getPurchaseInfo($conn,$dni,$date1,$date2)
+function getPurchaseInfo($conn, $dni, $date1, $date2)
 {
-    try{
+    try {
         $sql = $conn->prepare("SELECT PRODUCTO.NOMBRE,PRODUCTO.PRECIO,PRODUCTO.PRECIO,COMPRA.FECHA_COMPRA,COMPRA.UNIDADES FROM PRODUCTO,COMPRA WHERE
         PRODUCTO.ID_PRODUCTO=COMPRA.ID_PRODUCTO AND COMPRA.NIF=:dni and (COMPRA.FECHA_COMPRA >=:date1 and COMPRA.FECHA_COMPRA <:date2)");
         $sql->bindParam('dni', $dni);
@@ -330,26 +330,26 @@ function getPurchaseInfo($conn,$dni,$date1,$date2)
         $sql->execute();
         $sql->setFetchMode(PDO::FETCH_ASSOC);
         $result = $sql->fetchAll();
-        $total=0.0;
-       foreach ($result as $key => $value) {
-        $total+=floatval($value['PRECIO'])*floatval($value['UNIDADES']); 
-       }
-       $result['total']=$total;
-        return $result; 
-
-    }catch(PDOException $e){
+        $total = 0.0;
+        foreach ($result as $key => $value) {
+            $total += floatval($value['PRECIO']) * floatval($value['UNIDADES']);
+        }
+        $result['total'] = $total;
+        return $result;
+    } catch (PDOException $e) {
         $error = $e->getCode();
     }
 }
-function printPurchaseInfo($result){
+function printPurchaseInfo($result)
+{
     foreach ($result as $key => $value) {
-        if( is_numeric($key)){
-            echo "Fecha de Compra: ".$value['FECHA_COMPRA']."</br>";
-            echo "Nombre del producto: ".$value['NOMBRE']."</br>";       
-            echo "Precio del producto: ".(string)$value['PRECIO']."</br></br>";
+        if (is_numeric($key)) {
+            echo "Fecha de Compra: " . $value['FECHA_COMPRA'] . "</br>";
+            echo "Nombre del producto: " . $value['NOMBRE'] . "</br>";
+            echo "Precio del producto: " . (string)$value['PRECIO'] . "</br></br>";
         }
-       }
-       echo "El total de sus compras asciende a: ".$result['total']." euros";
+    }
+    echo "</br>El total de sus compras asciende a: " . $result['total'] . " euros";
 }
 // ------------ EJERCICIO 8 ------------
 
@@ -360,13 +360,13 @@ function isValidDni($nif)
     $letra = substr($nif, 8);
     $numeros = substr($nif, 0, 7);
     if (strlen($nif) != 9) {
-        echo "Error. La longitud no es la correcta. No es posible dar de alta</br>";
+        echo "</br>Error. La longitud no es la correcta. No es posible dar de alta</br>";
         $valido = false;
     } else if (!ctype_alpha($letra)) {
-        echo "Error, el último carácter debe de ser una letra</br>";
+        echo "</br>Error, el último carácter debe de ser una letra</br>";
         $valido = false;
     } else if (!is_numeric($numeros)) {
-        echo "Error, debe de ser 8 digitos.</br>";
+        echo "</br>Error, debe de ser 8 digitos.</br>";
         $valido = false;
     }
     return $valido;
@@ -390,11 +390,11 @@ function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu)
         $sql->bindParam('direccion', $direc);
         $sql->bindParam('ciudad', $ciu);
         $sql->execute();
-        echo "Se ha dado de alta al cliente</br>";
+        echo "</br>Se ha dado de alta al cliente</br>";
     } catch (PDOException $e) {
         $error = $e->getCode();
         if ($error = '2300') {
-            echo "DNI EXISTENTE. NO SE PUEDE DAR DE ALTA <BR>";
+            echo "</br>DNI EXISTENTE. NO SE PUEDE DAR DE ALTA <BR>";
         }
     }
 }
@@ -423,26 +423,74 @@ function isDniClient($conn, $dni)
 function buyProduct($conn, $dni, $product, $quantity)
 {
     $valido = true;
-    try {
 
+    try {
         test_input($quantity);
         $fecha = new DateTime();
         $stringFecha = $fecha->format("Y-m-d");
-        $sql = $conn->prepare("INSERT INTO COMPRA (NIF,ID_PRODUCTO,FECHA_COMPRA,UNIDADES) VALUES (:nif,:id_producto,:fecha,:unidades)");
+
+        $sql = $conn->prepare("SELECT compra.nif, compra.id_producto, compra.fecha_compra FROM compra where compra.nif = :nif and compra.id_producto = :id_producto and compra.fecha_compra = :fecha");
+
+        $sql->bindParam('nif', $dni);
+        $sql->bindParam('id_producto', $product);
+        $sql->bindParam('fecha', $stringFecha);
+
+        $sql->execute();
+
+        $exists = $sql->rowCount();
+    } catch (PDOException $e) {
+        echo 'ERRROR: ' . $e;
+    }
+
+    if ($exists = 0) {
+        try {
+            test_input($quantity);
+            $fecha = new DateTime();
+            $stringFecha = $fecha->format("Y-m-d");
+            
+            $sql = $conn->prepare("INSERT INTO COMPRA (NIF,ID_PRODUCTO,FECHA_COMPRA,UNIDADES) VALUES (:nif,:id_producto,:fecha,:unidades)");
+
+            $sql->bindParam('nif', $dni);
+            $sql->bindParam('id_producto', $product);
+            $sql->bindParam('fecha', $stringFecha);
+            $sql->bindParam('unidades', $quantity);
+
+            $sql->execute();
+
+            echo "Se ha realizado su compra satisfactoriamente</br>";
+        } catch (PDOException $e) {
+            $valido = false;
+            $error = $e->getCode();
+
+            echo 'ERRROR: ' . $e;
+        }
+
+        return $valido;
+    } else {
+        addPurchase($conn, $dni, $product, $quantity);
+    }
+}
+
+function addPurchase($conn, $dni, $product, $quantity)
+{
+    try {
+        test_input($quantity);
+        $fecha = new DateTime();
+        $stringFecha = $fecha->format("Y-m-d");
+
+        $sql = $conn->prepare("UPDATE COMPRA SET compra.unidades = compra.unidades + :unidades WHERE compra.nif = :nif and compra.fecha_compra = :fecha and compra.id_producto = :id_producto");
+
         $sql->bindParam('nif', $dni);
         $sql->bindParam('id_producto', $product);
         $sql->bindParam('fecha', $stringFecha);
         $sql->bindParam('unidades', $quantity);
+
         $sql->execute();
-        echo "Se ha realizado su compra satisfactoriamente</br>";
+
+        echo "</br>Se ha realizado su compra satisfactoriamente</br>";
     } catch (PDOException $e) {
-        $valido = false;
-        $error = $e->getCode();
-        if ($error = '2300') {
-            echo "ESTE DNI YA HA REALIZADO COMPRA <BR>";
-        }
+        echo 'ERROR: ' . $e;
     }
-    return $valido;
 }
 
 function isAvailable($conn, $product, $cantidad)
@@ -454,10 +502,10 @@ function isAvailable($conn, $product, $cantidad)
 
     if ($total <= 0 || !is_numeric($cantidad)) {
         $valid = false;
-        echo "Por favor introduzca una cantidad correcta</br>";
+        echo "</br>Por favor introduzca una cantidad correcta</br>";
     } else if ($cantidad > $total) {
         $valid = false;
-        echo "No hay existencias suficientes</br>";
+        echo "</br>No hay existencias suficientes</br>";
     }
 
     return $valid;
@@ -521,7 +569,7 @@ function checkWarehouseQuantity($conn, $product, $quantity, $index)
         $warehouse = $sql->fetchAll();
     } catch (PDOException $e) {
         $error = $e->getCode();
-        echo 'ERROR: ' . $error;
+        echo '</br>ERROR: ' . $error;
     }
 
     $i = 0;
@@ -537,6 +585,22 @@ function checkWarehouseQuantity($conn, $product, $quantity, $index)
     $quantity = $warehouse[$i]['CANTIDAD'] - $quantity;
     updateTableAlmacena($conn, $product, $quantity, $warehouse[$i]['ID_PRODUCTO'], $warehouse[$i]['NUM_ALMACEN']);
 }
+
+// function addPurchase($conn, $product, $quantity, $date)
+// {
+//     try {
+//         $sql = $conn->prepare("SELECT * FROM compra");
+//         $sql->execute();
+//         $sql->setFetchMode(PDO::FETCH_ASSOC);
+
+//         $warehouse = $sql->fetchAll();
+//     } catch (PDOException $e) {
+//         $error = $e->getCode();
+//         echo 'ERROR: ' . $error;
+//     }
+
+//     // if($warehouse)
+// }
 
 function updateTableAlmacena($conn, $product, $quantity, $id, $warehouse_num)
 {
