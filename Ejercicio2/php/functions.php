@@ -460,25 +460,53 @@ function getWarehousesTotalQuantity($conn, $product, $getTotal)
     }
 }
 
+// function checkWarehouseQuantity($conn, $product, $quantity, $index)
+// {
+//     $warehouses = getWarehousesTotalQuantity($conn, $product, false);
+
+//     $warehouse_quantity = $warehouses[$index]['CANTIDAD'];
+//     $warehouse = $warehouses[$index];
+
+//     if ($quantity - $warehouse_quantity > 0) {
+//         $quantity = $quantity - $warehouse_quantity;
+
+//         if ($quantity > 0) {
+//             updateTableAlmacena($conn, $product, 0, $warehouse['ID_PRODUCTO'], $warehouse['NUM_ALMACEN']);
+//         }
+
+//         checkWarehouseQuantity($conn, $product, $quantity, $index + 1);
+//     } else {
+//         $quantity = $warehouse_quantity - $quantity;
+//         updateTableAlmacena($conn, $product, $quantity, $warehouse['ID_PRODUCTO'], $warehouse['NUM_ALMACEN']);
+//     }
+// }
+
 function checkWarehouseQuantity($conn, $product, $quantity, $index)
 {
-    $warehouses = getWarehousesTotalQuantity($conn, $product, false);
+    try {
+        $sql = $conn->prepare("SELECT * FROM almacena where almacena.ID_PRODUCTO = :id_producto ORDER BY cantidad DESC");
+        $sql->bindParam('id_producto', $product);
+        $sql->execute();
+        $sql->setFetchMode(PDO::FETCH_ASSOC);
 
-    $warehouse_quantity = $warehouses[$index]['CANTIDAD'];
-    $warehouse = $warehouses[$index];
-
-    if ($quantity - $warehouse_quantity > 0) {
-        $quantity = $quantity - $warehouse_quantity;
-
-        if ($quantity > 0) {
-            updateTableAlmacena($conn, $product, 0, $warehouse['ID_PRODUCTO'], $warehouse['NUM_ALMACEN']);
-        }
-
-        checkWarehouseQuantity($conn, $product, $quantity, $index + 1);
-    } else {
-        $quantity = $warehouse_quantity - $quantity;
-        updateTableAlmacena($conn, $product, $quantity, $warehouse['ID_PRODUCTO'], $warehouse['NUM_ALMACEN']);
+        $warehouse = $sql->fetchAll();
+    } catch (PDOException $e) {
+        $error = $e->getCode();
+        echo 'ERROR: ' . $error;
     }
+
+    $i = 0;
+
+    while ($quantity - $warehouse[$i]['CANTIDAD'] > 0) {
+        updateTableAlmacena($conn, $product, 0, $warehouse[$i]['ID_PRODUCTO'], $warehouse[$i]['NUM_ALMACEN']);
+
+        $quantity = $quantity - $warehouse[$i]['CANTIDAD'];
+
+        $i++;
+    }
+
+    $quantity = $warehouse[$i]['CANTIDAD'] - $quantity;
+    updateTableAlmacena($conn, $product, $quantity, $warehouse[$i]['ID_PRODUCTO'], $warehouse[$i]['NUM_ALMACEN']);
 }
 
 function updateTableAlmacena($conn, $product, $quantity, $id, $warehouse_num)
