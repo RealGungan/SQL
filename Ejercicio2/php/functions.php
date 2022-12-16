@@ -174,7 +174,6 @@ function updateProduct($conn, $warehouse, $product_id, $quantity)
         $sql1->execute();
         $sql1->setFetchMode(PDO::FETCH_NUM);
         $resultado = $sql1->fetchAll();
-        var_dump($resultado);
         $resultado = $resultado[0][0];
         $resultado = intval($resultado) + intval($quantity);
 
@@ -417,7 +416,6 @@ function isDniClient($conn, $dni)
         $valid = false;
     }
     return $valid;
-    // mysql_num_rows
 }
 
 function buyProduct($conn, $dni, $product, $quantity)
@@ -438,16 +436,18 @@ function buyProduct($conn, $dni, $product, $quantity)
         $sql->execute();
 
         $exists = $sql->rowCount();
+
+        echo $exists;
     } catch (PDOException $e) {
         echo 'ERRROR: ' . $e;
     }
 
-    if ($exists = 0) {
+    if ($exists = 1) {
         try {
             test_input($quantity);
             $fecha = new DateTime();
             $stringFecha = $fecha->format("Y-m-d");
-            
+
             $sql = $conn->prepare("INSERT INTO COMPRA (NIF,ID_PRODUCTO,FECHA_COMPRA,UNIDADES) VALUES (:nif,:id_producto,:fecha,:unidades)");
 
             $sql->bindParam('nif', $dni);
@@ -474,6 +474,7 @@ function buyProduct($conn, $dni, $product, $quantity)
 function addPurchase($conn, $dni, $product, $quantity)
 {
     try {
+        echo 'hoy';
         test_input($quantity);
         $fecha = new DateTime();
         $stringFecha = $fecha->format("Y-m-d");
