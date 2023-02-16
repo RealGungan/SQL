@@ -1,0 +1,17 @@
+--------------------------------------CONSULTAS SQL-------------------------------------------
+PARA BUSCAR:
+$stmt2 = $conn->prepare("SELECT ID_DPTO FROM DPTO WHERE DPTO.NOMBRE=:nombre_dpto");
+
+PARA BUSCAR CON CONDICIONES:
+$stmt = $conn->prepare("SELECT EMPLE.NOMBRE FROM EMPLE,EMPLE_DPTO,DPTO WHERE 
+        DPTO.ID_DPTO=EMPLE_DPTO.ID_DPTO AND EMPLE_DPTO.DNI_EMPLE=EMPLE.DNI AND DPTO.NOMBRE=:nombredpto AND EMPLE_DPTO.FECHA_FIN IS null");
+
+PARA INSERTAR NUEVO RESGITRO
+$stmt3 = $conn->prepare("INSERT INTO EMPLE_DPTO (DNI_EMPLE,ID_DPTO,FECHA_INICIO,FECHA_FIN) VALUES (:dni,:id,:fecha_inicio,null)");
+
+PARA MODIFICAR CELDAS
+$stmt = $conn->prepare("UPDATE EMPLE  SET SALARIO=:salarioNuevo WHERE DNI=:codigodni");
+
+PARA ELIMINAR UN REGISTRO
+$stmt = $conn->prepare("DELETE FROM CATEGORIA WHERE ID_CATEGORIA="P1");
+

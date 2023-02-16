@@ -323,12 +323,16 @@ function getPurchaseInfo($conn, $dni, $date1, $date2)
     try {
         $sql = $conn->prepare("SELECT PRODUCTO.NOMBRE,PRODUCTO.PRECIO,PRODUCTO.PRECIO,COMPRA.FECHA_COMPRA,COMPRA.UNIDADES FROM PRODUCTO,COMPRA WHERE
         PRODUCTO.ID_PRODUCTO=COMPRA.ID_PRODUCTO AND COMPRA.NIF=:dni and (COMPRA.FECHA_COMPRA >=:date1 and COMPRA.FECHA_COMPRA <:date2)");
+
         $sql->bindParam('dni', $dni);
         $sql->bindParam('date1', $date1);
         $sql->bindParam('date2', $date2);
+
         $sql->execute();
+
         $sql->setFetchMode(PDO::FETCH_ASSOC);
         $result = $sql->fetchAll();
+
         $total = 0.0;
         foreach ($result as $key => $value) {
             $total += floatval($value['PRECIO']) * floatval($value['UNIDADES']);
@@ -371,7 +375,7 @@ function isValidDni($nif)
     return $valido;
 }
 
-function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu)
+function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu, $usrname, $password)
 {
     try {
         test_input($nif);
@@ -380,18 +384,25 @@ function addClient($conn, $nif, $nombre, $apellido, $cp, $direc, $ciu)
         test_input($cp);
         test_input($direc);
         test_input($ciu);
-        $sql = $conn->prepare("INSERT INTO CLIENTE (NIF,NOMBRE,APELLIDO,CP,DIRECCION,CIUDAD) VALUES (:nif,:nombre,:apellido,:cp,
-    :direccion,:ciudad)");
+
+        $sql = $conn->prepare("INSERT INTO CLIENTE (NIF,NOMBRE,APELLIDO,CP,DIRECCION,CIUDAD, USER_NAME, PASSWORD) VALUES (:nif,:nombre,:apellido,:cp,
+        :direccion,:ciudad, :usrname, :password)");
+
         $sql->bindParam('nif', $nif);
         $sql->bindParam('nombre', $nombre);
         $sql->bindParam('apellido', $apellido);
         $sql->bindParam('cp', $cp);
         $sql->bindParam('direccion', $direc);
         $sql->bindParam('ciudad', $ciu);
+        $sql->bindParam('usrname', $usrname);
+        $sql->bindParam('password', $password);
+
         $sql->execute();
+
         echo "</br>Se ha dado de alta al cliente</br>";
     } catch (PDOException $e) {
         $error = $e->getCode();
+
         if ($error = '2300') {
             echo "</br>DNI EXISTENTE. NO SE PUEDE DAR DE ALTA <BR>";
         }
